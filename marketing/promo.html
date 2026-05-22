@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BodyQ — Train Smarter. Move Better. Live Longer.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --purple: #7C5CFC; --purple-dark: #4A2FC8; --purple-deep: #2D1B8A;
+  --purple-light: #9D85F5; --lime: #C8F135; --lime-hover: #D4FF4A;
+  --bg: #0F0B1E; --surface: #16102A; --surface2: #1E1735;
+  --text: #FFFFFF; --text-sec: rgba(255,255,255,0.65); --glass: rgba(22,18,48,0.82);
+}
+html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+.bg-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.bg-glow::before {
+  content: ''; position: absolute; top: -40%; left: -20%; width: 140%; height: 140%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(124,92,252,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(200,241,53,0.08) 0%, transparent 50%);
+  animation: glowPulse 8s ease-in-out infinite alternate;
+}
+@keyframes glowPulse { 0% { opacity: .6; transform: scale(1); } 100% { opacity: 1; transform: scale(1.1) translate(2%,-3%); } }
+
+.floating-shapes { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.shape { position: absolute; opacity: 0.08; }
+.shape-1 { width: 300px; height: 300px; background: radial-gradient(circle, var(--purple) 0%, transparent 70%); top: -5%; left: -5%; border-radius: 50%; animation: shape1 18s ease-in-out infinite; }
+.shape-2 { width: 200px; height: 200px; background: radial-gradient(circle, var(--lime) 0%, transparent 70%); top: 15%; right: -3%; border-radius: 50%; animation: shape2 14s ease-in-out infinite; }
+.shape-3 { width: 250px; height: 250px; background: radial-gradient(circle, var(--purple-light) 0%, transparent 70%); bottom: 10%; left: 5%; border-radius: 50%; animation: shape3 20s ease-in-out infinite; }
+.shape-4 { width: 150px; height: 150px; background: radial-gradient(circle, var(--lime) 0%, transparent 70%); top: 50%; right: 8%; border-radius: 50%; animation: shape4 12s ease-in-out infinite; }
+@keyframes shape1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,30px) scale(1.15);} }
+@keyframes shape2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-30px,40px) scale(1.2);} }
+@keyframes shape3 { 0%,100%{transform:translate(0,0) scale(1) rotate(0deg);} 50%{transform:translate(30px,-20px) scale(1.1) rotate(10deg);} }
+@keyframes shape4 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-20px,-30px) scale(1.3);} }
+
+/* 3D FLOATING ORBS */
+.orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 1; }
+.orb-1 { width: 6px; height: 6px; background: var(--purple); top: 12%; left: 8%; box-shadow: 0 0 15px var(--purple); animation: orbFloat1 7s ease-in-out infinite; }
+.orb-2 { width: 4px; height: 4px; background: var(--lime); top: 30%; right: 15%; box-shadow: 0 0 12px var(--lime); animation: orbFloat2 9s ease-in-out infinite; }
+.orb-3 { width: 5px; height: 5px; background: var(--purple-light); bottom: 25%; left: 20%; box-shadow: 0 0 14px var(--purple-light); animation: orbFloat3 11s ease-in-out infinite; }
+.orb-4 { width: 3px; height: 3px; background: var(--lime); top: 60%; right: 25%; box-shadow: 0 0 10px var(--lime); animation: orbFloat4 8s ease-in-out infinite; }
+.orb-5 { width: 5px; height: 5px; background: var(--purple); bottom: 15%; right: 10%; box-shadow: 0 0 12px var(--purple); animation: orbFloat1 13s ease-in-out infinite reverse; }
+@keyframes orbFloat1 { 0%,100%{transform:translateY(0) translateX(0);} 25%{transform:translateY(-20px) translateX(10px);} 50%{transform:translateY(-10px) translateX(-15px);} 75%{transform:translateY(-30px) translateX(5px);} }
+@keyframes orbFloat2 { 0%,100%{transform:translateY(0) translateX(0);} 33%{transform:translateY(-25px) translateX(-12px);} 66%{transform:translateY(-8px) translateX(18px);} }
+@keyframes orbFloat3 { 0%,100%{transform:translate(0);} 50%{transform:translate(20px,-15px);} }
+@keyframes orbFloat4 { 0%,100%{transform:translate(0);} 50%{transform:translate(-15px,-20px);} }
+
+#particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+/* SCENE SYSTEM */
+.stage { position: fixed; inset: 0; z-index: 2; overflow: hidden; }
+.scene {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0.96) translateY(25px);
+  transition: opacity 1.2s cubic-bezier(0.16,1,0.3,1), transform 1.2s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none; will-change: opacity, transform;
+}
+.scene.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+.scene.exit-up { opacity: 0; transform: scale(1.02) translateY(-30px); }
+
+.scene-timer { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--lime)); z-index: 100; width: 0%; }
+.progress-bar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 50; }
+.progress-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.12); transition: all 0.4s; cursor: pointer; }
+.progress-dot.active { background: var(--purple); box-shadow: 0 0 12px rgba(124,92,252,0.5); width: 26px; border-radius: 4px; }
+.scene-counter { position: fixed; top: 20px; right: 30px; z-index: 50; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; }
+
+/* ===== PHONE MOCKUP ===== */
+.phone-mock {
+  flex-shrink: 0; position: relative;
+  background: linear-gradient(145deg, #1a1430, #0d0a1a);
+  border-radius: 36px; border: 2px solid rgba(124,92,252,0.25);
+  padding: 10px;
+  box-shadow: 0 0 60px rgba(124,92,252,0.15), 0 25px 80px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+}
+.phone-mock.float { animation: phoneFloat 6s ease-in-out infinite; }
+.phone-mock.float-delay { animation: phoneFloat 6s ease-in-out infinite; animation-delay: -2s; }
+.phone-mock.float-delay2 { animation: phoneFloat 6s ease-in-out infinite; animation-delay: -4s; }
+@keyframes phoneFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+.phone-mock.tilt-left { animation: phoneTiltLeft 6s ease-in-out infinite; }
+@keyframes phoneTiltLeft { 0%,100%{transform:perspective(800px) rotateY(8deg) rotateX(2deg) translateY(0);} 50%{transform:perspective(800px) rotateY(8deg) rotateX(2deg) translateY(-12px);} }
+.phone-mock.tilt-right { animation: phoneTiltRight 6s ease-in-out infinite; }
+@keyframes phoneTiltRight { 0%,100%{transform:perspective(800px) rotateY(-8deg) rotateX(2deg) translateY(0);} 50%{transform:perspective(800px) rotateY(-8deg) rotateX(2deg) translateY(-12px);} }
+
+.phone-notch { width: 100px; height: 24px; background: #0d0a1a; border-radius: 0 0 14px 14px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 3; }
+.phone-screen { width: 100%; height: 100%; border-radius: 28px; overflow: hidden; position: relative; }
+.phone-screen img { width: 100%; height: 100%; object-fit: cover; }
+.phone-glow { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(124,92,252,0.22) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: -1; animation: glowScale 8s linear infinite; }
+@keyframes glowScale { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.15);} }
+
+/* ===== LAPTOP MOCKUP ===== */
+.laptop-mock {
+  position: relative; perspective: 1200px;
+  animation: laptopFloat 7s ease-in-out infinite;
+}
+@keyframes laptopFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+.laptop-lid {
+  width: 360px; height: 225px;
+  background: linear-gradient(145deg, #2a2440, #1a1430);
+  border-radius: 12px 12px 0 0; border: 2px solid rgba(124,92,252,0.2);
+  padding: 8px 10px 2px 10px; position: relative;
+  transform: perspective(800px) rotateX(5deg);
+  box-shadow: 0 -10px 40px rgba(124,92,252,0.1), inset 0 1px 1px rgba(255,255,255,0.05);
+}
+.laptop-lid img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+.laptop-cam { width: 6px; height: 6px; border-radius: 50%; background: #333; border: 1px solid #444; position: absolute; top: 3px; left: 50%; transform: translateX(-50%); }
+.laptop-base {
+  width: 400px; height: 14px; margin: 0 auto;
+  background: linear-gradient(180deg, #2a2440, #1a1430);
+  border-radius: 0 0 6px 6px; border: 2px solid rgba(124,92,252,0.15); border-top: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.laptop-base::before { content: ''; display: block; width: 60px; height: 4px; background: rgba(124,92,252,0.2); border-radius: 2px; margin: 3px auto 0; }
+
+/* ===== 3D WATCH ===== */
+.watch-container { position: relative; perspective: 800px; }
+.watch-3d {
+  width: 180px; height: 220px; position: relative;
+  transform-style: preserve-3d;
+  animation: watchFloat 5s ease-in-out infinite;
+}
+.watch-3d.tilted {
+  animation: watchTilt 6s ease-in-out infinite;
+}
+@keyframes watchFloat { 0%,100%{transform:rotateY(0) translateY(0);} 50%{transform:rotateY(0) translateY(-10px);} }
+@keyframes watchTilt { 0%,100%{transform:rotateY(-20deg) rotateX(10deg) translateY(0);} 50%{transform:rotateY(-20deg) rotateX(10deg) translateY(-10px);} }
+.watch-band-top {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 35px; background: linear-gradient(180deg, #B8E62D, #9DC82F);
+  border-radius: 14px 14px 4px 4px;
+  box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 -4px 10px rgba(0,0,0,0.3);
+}
+.watch-band-top::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:20px; height:3px; background:rgba(0,0,0,0.15); border-radius:2px; }
+.watch-band-bottom {
+  position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 35px; background: linear-gradient(0deg, #B8E62D, #9DC82F);
+  border-radius: 4px 4px 14px 14px;
+  box-shadow: inset 0 -2px 6px rgba(255,255,255,0.25), 0 4px 10px rgba(0,0,0,0.3);
+}
+.watch-band-bottom::after { content:''; position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:20px; height:3px; background:rgba(0,0,0,0.15); border-radius:2px; }
+.watch-body {
+  width: 160px; height: 195px; position: absolute; top: 12px; left: 10px;
+  background: linear-gradient(145deg, #3a3a40, #1a1a1e);
+  border-radius: 38px; border: 4px solid #4a4a52;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.6), inset 0 1px 3px rgba(255,255,255,0.08), 0 0 30px rgba(124,92,252,0.08);
+  overflow: hidden; padding: 10px;
+}
+.watch-body img { width: 100%; height: 100%; object-fit: cover; border-radius: 28px; }
+.watch-crown { position: absolute; right: -10px; top: 45%; transform: translateY(-50%); width: 10px; height: 26px; background: linear-gradient(180deg, #666, #333); border-radius: 3px; box-shadow: 3px 0 6px rgba(0,0,0,0.4); }
+.watch-button { position: absolute; right: -8px; top: 62%; width: 8px; height: 14px; background: linear-gradient(180deg, #555, #222); border-radius: 2px; box-shadow: 2px 0 4px rgba(0,0,0,0.3); }
+
+/* ===== GLASS & CARDS ===== */
+.glass-card {
+  background: var(--glass); backdrop-filter: blur(16px);
+  border: 1px solid rgba(124,92,252,0.12); border-radius: 16px;
+  padding: 14px;
+}
+.purple-card {
+  background: linear-gradient(135deg, rgba(124,92,252,0.4), rgba(124,92,252,0.15));
+  border: 1px solid rgba(124,92,252,0.3); border-radius: 14px; padding: 12px;
+}
+
+/* ===== MASCOT ===== */
+.mascot-float {
+  filter: drop-shadow(0 0 40px rgba(124,92,252,0.4)) drop-shadow(0 0 80px rgba(200,241,53,0.15));
+  animation: mascotHover 4s ease-in-out infinite;
+}
+@keyframes mascotHover {
+  0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-12px) rotate(2deg) scale(1.02); }
+  50% { transform: translateY(-18px) rotate(-1deg) scale(1.01); }
+  75% { transform: translateY(-8px) rotate(1.5deg) scale(1.03); }
+}
+
+/* remove white bg via CSS: mix-blend-mode + custom trick */
+.no-white-bg {
+  mix-blend-mode: screen;
+}
+
+/* ===== ANIM HELPERS ===== */
+.anim-in { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16,1,0.3,1); }
+.anim-in-left { opacity: 0; transform: translateX(-60px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.anim-in-right { opacity: 0; transform: translateX(60px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.anim-in-scale { opacity: 0; transform: scale(0.6); transition: all 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+.anim-rotate-in { opacity: 0; transform: rotate(-10deg) scale(0.8); transition: all 0.9s cubic-bezier(0.34,1.56,0.64,1); }
+.scene.active .anim-in, .scene.active .anim-in-left, .scene.active .anim-in-right { opacity: 1; transform: translate(0); }
+.scene.active .anim-in-scale { opacity: 1; transform: scale(1); }
+.scene.active .anim-rotate-in { opacity: 1; transform: rotate(0) scale(1); }
+.d1{transition-delay:.1s!important} .d2{transition-delay:.25s!important} .d3{transition-delay:.4s!important}
+.d4{transition-delay:.55s!important} .d5{transition-delay:.7s!important} .d6{transition-delay:.85s!important}
+.d7{transition-delay:1s!important} .d8{transition-delay:1.15s!important}
+
+/* ===== SCENE LAYOUTS ===== */
+.sc-split { display: flex; align-items: center; justify-content: center; gap: 60px; max-width: 1200px; padding: 0 40px; }
+.sc-center { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; max-width: 900px; padding: 0 40px; }
+
+.sc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.sc-label::before { content: ''; width: 24px; height: 2px; background: var(--lime); }
+
+.sc-title { font-family: 'Syne', sans-serif; font-weight: 800; line-height: 0.95; }
+.sc-title.xl { font-size: clamp(42px, 6vw, 74px); }
+.sc-title.lg { font-size: clamp(34px, 5vw, 56px); }
+.sc-title.md { font-size: clamp(26px, 4vw, 42px); }
+.sc-title .accent { color: var(--lime); }
+.sc-title .purple { color: var(--purple-light); }
+.sc-desc { font-size: 14px; line-height: 1.7; color: var(--text-sec); max-width: 400px; }
+.sc-text-block { max-width: 460px; flex-shrink: 0; }
+
+/* ===== STATS ===== */
+.stat-pills { display: flex; gap: 14px; flex-wrap: wrap; }
+.stat-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--glass); backdrop-filter: blur(10px);
+  border: 1px solid rgba(124,92,252,0.12); border-radius: 100px;
+  padding: 10px 18px;
+}
+.stat-pill .sp-icon { font-size: 16px; }
+.stat-pill .sp-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; }
+.stat-pill .sp-label { font-size: 10px; color: var(--text-sec); }
+
+/* ===== FEATURE CARDS ===== */
+.feat-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.feat-card {
+  background: var(--glass); backdrop-filter: blur(16px);
+  border: 1px solid rgba(124,92,252,0.1); border-radius: 20px;
+  padding: 24px 18px; text-align: center; width: 180px;
+  position: relative; overflow: hidden;
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+.feat-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 40px rgba(124,92,252,0.15); }
+.feat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--lime)); transform: scaleX(0); transform-origin: left; transition: transform 1.2s 1s; }
+.scene.active .feat-card::before { transform: scaleX(1); }
+.feat-icon { width: 48px; height: 48px; margin: 0 auto 12px; background: linear-gradient(135deg, rgba(124,92,252,0.2), rgba(124,92,252,0.05)); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 1px solid rgba(124,92,252,0.12); }
+.feat-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.feat-desc { font-size: 10px; color: var(--text-sec); line-height: 1.5; }
+
+/* ===== INSIGHT CARDS ===== */
+.insight-mini { background: var(--glass); border: 1px solid rgba(124,92,252,0.15); border-radius: 12px; padding: 12px; display: flex; gap: 10px; align-items: flex-start; }
+.insight-mini .im-icon { font-size: 20px; flex-shrink: 0; }
+.insight-mini .im-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+.insight-mini .im-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; }
+.tag-nutrition { color: #4CAF50; } .tag-perf { color: #E040FB; } .tag-corr { color: #EF9F27; }
+
+/* ===== LEADERBOARD ===== */
+.leaderboard {
+  background: var(--glass); backdrop-filter: blur(12px);
+  border: 1px solid rgba(124,92,252,0.15); border-radius: 18px;
+  padding: 16px; width: 240px;
+}
+.lb-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(124,92,252,0.08); }
+.lb-row:last-child { border-bottom: none; }
+.lb-rank { font-family: 'Syne'; font-weight: 800; font-size: 13px; width: 20px; color: var(--lime); }
+.lb-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+.lb-name { font-size: 11px; font-weight: 600; }
+.lb-xp { font-size: 9px; color: var(--text-sec); }
+
+.challenge-card {
+  background: linear-gradient(135deg, rgba(124,92,252,0.25), rgba(124,92,252,0.08));
+  border: 1px solid rgba(124,92,252,0.2); border-radius: 14px; padding: 12px; width: 170px;
+}
+
+/* CTA */
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 40px; background: var(--lime); color: var(--bg);
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px;
+  border: none; border-radius: 100px; text-decoration: none;
+  animation: ctaPulse 2s ease-in-out infinite;
+  transition: transform 0.3s;
+}
+.cta-btn:hover { transform: scale(1.05); }
+@keyframes ctaPulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,241,53,0.3);} 50%{box-shadow:0 0 30px 10px rgba(200,241,53,0.1);} }
+.cta-purple { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: white; animation: ctaPulseP 2s ease-in-out infinite; }
+@keyframes ctaPulseP { 0%,100%{box-shadow:0 0 0 0 rgba(124,92,252,0.3);} 50%{box-shadow:0 0 30px 10px rgba(124,92,252,0.1);} }
+
+/* ===== YARA SCENE ===== */
+.yara-wave {
+  position: absolute; top: 50%; left: 50%; border-radius: 50%;
+  border: 2px solid rgba(124,92,252,0.25);
+  transform: translate(-50%,-50%) scale(0.5);
+  opacity: 0; z-index: 1;
+}
+.yara-wave-1 { width: 300px; height: 300px; animation: yaraWave 3s ease-out infinite; }
+.yara-wave-2 { width: 300px; height: 300px; animation: yaraWave 3s ease-out infinite 1s; }
+.yara-wave-3 { width: 300px; height: 300px; animation: yaraWave 3s ease-out infinite 2s; }
+.scene.active .yara-wave { animation-play-state: running; }
+@keyframes yaraWave {
+  0% { transform: translate(-50%,-50%) scale(0.6); opacity: 0.6; border-color: rgba(124,92,252,0.4); }
+  100% { transform: translate(-50%,-50%) scale(1.6); opacity: 0; border-color: rgba(200,241,53,0.1); }
+}
+
+.yara-orbit {
+  position: absolute; inset: -30px; animation: ringSpin 16s linear infinite; z-index: 4;
+}
+.yara-orbit-icon {
+  position: absolute; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--glass); backdrop-filter: blur(8px);
+  border: 1px solid rgba(124,92,252,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  top: calc(50% - 18px); left: calc(50% - 18px);
+  transform: rotate(var(--angle)) translateX(155px) rotate(calc(-1 * var(--angle)));
+  animation: orbitCounterSpin 16s linear infinite;
+  animation-delay: var(--delay);
+}
+@keyframes orbitCounterSpin { to { transform: rotate(var(--angle)) translateX(155px) rotate(calc(-1 * var(--angle) - 360deg)); } }
+
+.yara-bubble {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px;
+  border-radius: 16px; max-width: 360px;
+  animation: bubbleFadeIn 0.6s ease-out both;
+}
+.yara-bubble-user {
+  background: rgba(124,92,252,0.2); border: 1px solid rgba(124,92,252,0.25);
+  align-self: flex-end; margin-left: auto; animation-delay: 0.6s;
+}
+.yara-bubble-yara {
+  background: rgba(200,241,53,0.1); border: 1px solid rgba(200,241,53,0.2);
+  align-self: flex-start; animation-delay: 1.8s;
+}
+.yara-bubble-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.yara-bubble-text { font-size: 12px; line-height: 1.5; color: var(--text-sec); }
+.yara-bubble-user .yara-bubble-text { color: rgba(255,255,255,0.8); }
+@keyframes bubbleFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.yara-typing { overflow: hidden; white-space: nowrap; border-right: 2px solid var(--lime); width: 0; animation: bubbleFadeIn 0.6s ease-out 1.8s both, yaraType 2s steps(50) 2.2s forwards, yaraBlink 0.6s step-end 4.2s infinite; }
+@keyframes yaraType { to { width: 100%; } }
+@keyframes yaraCenter { 0%,100%{margin-top:0;} 50%{margin-top:-14px;} }
+@keyframes yaraBlink { 50% { border-color: transparent; } }
+
+.yara-cap {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  background: var(--glass); backdrop-filter: blur(8px);
+  border: 1px solid rgba(124,92,252,0.15);
+  font-size: 12px; font-weight: 600; color: var(--text-sec);
+  transition: all 0.3s;
+}
+.yara-cap:hover { border-color: var(--lime); color: var(--lime); transform: translateY(-2px); }
+.yara-cap span { font-size: 14px; }
+
+/* 3D RING */
+.ring-3d {
+  position: absolute; border: 1px solid rgba(124,92,252,0.1); border-radius: 50%;
+  animation: ringSpin 20s linear infinite;
+}
+@keyframes ringSpin { to { transform: rotateZ(360deg); } }
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+  .sc-split { flex-direction: column !important; gap: 30px; }
+  .phone-mock { transform: none !important; }
+  .sc-title.xl { font-size: clamp(32px, 9vw, 54px); }
+  .laptop-lid { width: 280px; height: 175px; }
+  .laptop-base { width: 310px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="floating-shapes"><div class="shape shape-1"></div><div class="shape shape-2"></div><div class="shape shape-3"></div><div class="shape shape-4"></div></div>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div><div class="orb orb-5"></div>
+<canvas id="particles"></canvas>
+<div class="scene-timer" id="sceneTimer"></div>
+<div class="scene-counter" id="sceneCounter">01 / 10</div>
+
+<div class="stage">
+
+<!-- ===== SCENE 0: HERO ===== -->
+<div class="scene active" data-scene="0">
+  <div class="sc-split">
+    <div style="position:relative" class="anim-in-left d1">
+      <div class="phone-glow"></div>
+      <div class="phone-mock tilt-right" style="width:260px; height:540px;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <img src="promo-assets/home screen.jpg" alt="BodyQ Home">
+        </div>
+      </div>
+      <!-- Yara mascot - transparent bg via mix-blend-mode, large & animated -->
+      <img src="promo-assets/yara_spirit.png" class="mascot-float anim-in-scale d3 no-white-bg" style="position:absolute; bottom:-30px; right:-110px; width:180px; z-index:5;" alt="Yara AI">
+    </div>
+    <div class="sc-text-block">
+      <div class="sc-label anim-in d2">AI-Powered Fitness</div>
+      <h1 class="sc-title xl" style="margin-bottom:18px;">
+        <span class="anim-in d3" style="display:block;">TRAIN</span>
+        <span class="anim-in d4" style="display:block;"><span class="accent">SMARTER.</span></span>
+        <span class="anim-in d5" style="display:block;">MOVE <span class="purple">BETTER.</span></span>
+        <span class="anim-in d6" style="display:block;"><span class="accent">LIVE LONGER.</span></span>
+      </h1>
+      <p class="sc-desc anim-in d7">Real-time posture analysis, personalized workout plans, and smart nutrition guidance — all powered by AI.</p>
+      <div class="anim-in d8" style="margin-top:22px;">
+        <a href="#" class="cta-btn cta-purple">Start Training <span style="font-size:18px;">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 1: DASHBOARD - MULTI DEVICE ===== -->
+<div class="scene" data-scene="1">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:20px; max-width:1200px; padding:0 30px;">
+    <div style="text-align:center;">
+      <div class="sc-label anim-in d1" style="justify-content:center;">Your Command Center</div>
+      <h2 class="sc-title lg anim-in d2">EVERYTHING AT A <span class="accent">GLANCE</span></h2>
+      <p class="sc-desc anim-in d3" style="text-align:center; max-width:500px; margin:10px auto 0;">Calories, macros, steps, sleep, water — your entire day across all devices. Powered by real-time data.</p>
+    </div>
+    <div style="display:flex; align-items:flex-end; justify-content:center; gap:30px; margin-top:10px; perspective:1200px;">
+      <!-- Laptop -->
+      <div class="laptop-mock anim-in-left d3">
+        <div class="laptop-lid">
+          <div class="laptop-cam"></div>
+          <img src="promo-assets/web1.png" alt="BodyQ Web" style="margin-top:4px;">
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+      <!-- Phone -->
+      <div class="anim-in d4" style="position:relative;">
+        <div class="phone-mock float" style="width:160px; height:330px;">
+          <div class="phone-notch" style="width:60px; height:16px; border-radius:0 0 8px 8px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/training.jpg" alt="BodyQ Training">
+          </div>
+        </div>
+        <img src="promo-assets/yara_spirit.png" class="no-white-bg mascot-float" style="position:absolute; bottom:-20px; right:-50px; width:80px; z-index:5;" alt="Yara">
+      </div>
+      <!-- Watch -->
+      <div class="watch-container anim-in-right d5">
+        <div class="watch-3d" style="width:130px; height:160px;">
+          <div class="watch-band-top" style="width:56px; height:24px; border-radius:10px 10px 3px 3px;"></div>
+          <div class="watch-body" style="width:115px; height:140px; top:10px; left:7px; border-radius:28px; padding:7px;">
+            <img src="promo-assets/watch1.png" alt="BodyQ Watch" style="border-radius:20px;">
+          </div>
+          <div class="watch-band-bottom" style="width:56px; height:24px; border-radius:3px 3px 10px 10px;"></div>
+          <div class="watch-crown" style="right:-7px; width:7px; height:18px;"></div>
+          <div class="watch-button" style="right:-5px; width:5px; height:10px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-pills anim-in d6" style="justify-content:center; margin-top:6px;">
+      <div class="stat-pill"><span class="sp-icon">🔥</span><div><div class="sp-val">2,537</div><div class="sp-label">Cal Target</div></div></div>
+      <div class="stat-pill"><span class="sp-icon">🦶</span><div><div class="sp-val">10K</div><div class="sp-label">Step Goal</div></div></div>
+      <div class="stat-pill"><span class="sp-icon">⌚</span><div><div class="sp-val">Sync</div><div class="sp-label">All Devices</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 2: AI TRAINING ===== -->
+<div class="scene" data-scene="2">
+  <div class="sc-split" style="gap:50px;">
+    <div class="sc-text-block anim-in-left d1" style="max-width:380px; flex:0 1 380px; overflow:hidden;">
+      <div class="sc-label">Training Command Center</div>
+      <h2 class="sc-title md anim-in d2">AI-POWERED<br><span class="accent">TRAINING</span></h2>
+      <p class="sc-desc anim-in d3">Personalized daily blueprints that adapt to your goals, equipment, and recovery. Every workout is unique.</p>
+      <div class="stat-pills anim-in d4" style="margin-top:18px;">
+        <div class="stat-pill"><span class="sp-icon">⏱️</span><div><div class="sp-val">25</div><div class="sp-label">Minutes</div></div></div>
+        <div class="stat-pill"><span class="sp-icon">🔥</span><div><div class="sp-val">280</div><div class="sp-label">kcal</div></div></div>
+      </div>
+    </div>
+    <div class="anim-in-right d2" style="position:relative; flex-shrink:0;">
+      <div class="phone-glow"></div>
+      <div class="phone-mock tilt-left" style="width:250px; height:520px;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <img src="promo-assets/training - recovery.jpg" alt="Training">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 3: POSTURE - 3 PHONES ===== -->
+<div class="scene" data-scene="3">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:10px; max-width:1200px; padding:20px 30px; margin:0 auto;">
+    <div style="text-align:center; flex-shrink:0;">
+      <div class="sc-label anim-in d1" style="justify-content:center;">Computer Vision AI</div>
+      <h2 class="sc-title md anim-in d2">REAL-TIME <span class="accent">POSTURE</span> <span class="purple">COACH</span></h2>
+      <p class="sc-desc anim-in d3" style="text-align:center; max-width:460px; margin:6px auto 0; font-size:13px;">AI-powered skeletal tracking identifies form errors before they become injuries. Every rep, every angle — corrected in real time.</p>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:14px; perspective:1200px; flex:1; min-height:0;">
+      <div class="anim-in-left d3" style="position:relative;">
+        <div class="phone-mock tilt-right" style="width:155px; height:310px;">
+          <div class="phone-notch" style="width:56px; height:14px; border-radius:0 0 8px 8px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/posture1.jpeg" alt="Posture Analysis 1">
+          </div>
+        </div>
+      </div>
+      <div class="anim-in-scale d4" style="position:relative; z-index:2;">
+        <div class="phone-glow"></div>
+        <div class="phone-mock float" style="width:185px; height:370px;">
+          <div class="phone-notch" style="width:70px; height:16px; border-radius:0 0 10px 10px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/posture3.jpeg" alt="Posture Analysis 2">
+          </div>
+        </div>
+      </div>
+      <div class="anim-in-right d5" style="position:relative;">
+        <div class="phone-mock tilt-left" style="width:155px; height:310px;">
+          <div class="phone-notch" style="width:56px; height:14px; border-radius:0 0 8px 8px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/posture2.jpeg" alt="Posture Analysis 3">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-pills anim-in d6" style="justify-content:center; flex-shrink:0;">
+      <div class="stat-pill"><span class="sp-icon">📐</span><div><div class="sp-val">14</div><div class="sp-label">Joints</div></div></div>
+      <div class="stat-pill"><span class="sp-icon">⚡</span><div><div class="sp-val">30fps</div><div class="sp-label">Real-time</div></div></div>
+      <div class="stat-pill"><span class="sp-icon">🎯</span><div><div class="sp-val">100%</div><div class="sp-label">Form Score</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 4: NUTRITION ===== -->
+<div class="scene" data-scene="4">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:20px; max-width:1200px; padding:0 30px;">
+    <div style="text-align:center;">
+      <div class="sc-label anim-in d1" style="justify-content:center;">AI Nutrition Engine</div>
+      <h2 class="sc-title lg anim-in d2">SMART <span class="accent">NUTRITION</span></h2>
+      <p class="sc-desc anim-in d3" style="text-align:center; max-width:500px; margin:8px auto 0;">Scan meals with your camera, track macros automatically, and get AI-driven dietary recommendations.</p>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:24px; margin-top:6px; perspective:1200px;">
+      <div class="anim-in-left d3" style="position:relative;">
+        <div class="phone-mock tilt-right" style="width:210px; height:440px;">
+          <div class="phone-notch" style="width:76px; height:20px; border-radius:0 0 10px 10px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/food log nutrition.jpg" alt="Nutrition Tracking">
+          </div>
+        </div>
+      </div>
+      <div class="anim-in-right d4" style="position:relative;">
+        <div class="phone-mock tilt-left" style="width:210px; height:440px;">
+          <div class="phone-notch" style="width:76px; height:20px; border-radius:0 0 10px 10px;"></div>
+          <div class="phone-screen">
+            <img src="promo-assets/food scanning.png" alt="Food Scanning">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-pills anim-in d5" style="justify-content:center;">
+      <div class="stat-pill"><span class="sp-icon">📸</span><div><div class="sp-val">AI Scan</div><div class="sp-label">Photo Recognition</div></div></div>
+      <div class="stat-pill"><span class="sp-icon">🎯</span><div><div class="sp-val">Macros</div><div class="sp-label">Auto-tracked</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 5: INSIGHTS ===== -->
+<div class="scene" data-scene="5">
+  <div class="sc-split" style="gap:50px;">
+    <div class="sc-text-block">
+      <div class="sc-label anim-in d1">Deep Analytics</div>
+      <h2 class="sc-title lg anim-in d2">AI-DRIVEN<br><span class="accent">INSIGHTS</span></h2>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+        <div class="insight-mini anim-in d3"><div class="im-icon">🥗</div><div><div class="im-tag tag-nutrition">Nutrition</div><div class="im-title">Insufficient Calorie Intake</div></div></div>
+        <div class="insight-mini anim-in d4"><div class="im-icon">🚀</div><div><div class="im-tag tag-perf">Performance</div><div class="im-title">Inactivity and Weight Stagnation</div></div></div>
+        <div class="insight-mini anim-in d5"><div class="im-icon">🌙</div><div><div class="im-tag tag-corr">Correlation</div><div class="im-title">High Steps but Poor Sleep</div></div></div>
+      </div>
+    </div>
+    <div class="anim-in-right d2" style="position:relative; flex-shrink:0;">
+      <div class="phone-glow"></div>
+      <div class="phone-mock tilt-left" style="width:250px; height:520px;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <img src="promo-assets/4 insights cards.jpg" alt="AI Insights">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 6: YARA AI ===== -->
+<div class="scene" data-scene="6">
+  <div style="position:relative; width:100%; height:100%;">
+    <!-- Yara mascot - dead center of the viewport -->
+    <div class="anim-in-scale d1" style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; z-index:3;">
+      <div style="position:relative; width:260px; height:260px;">
+        <div style="position:absolute; inset:-70px; border-radius:50%; background:radial-gradient(circle, rgba(124,92,252,0.15) 0%, transparent 70%); animation: glowScale 6s ease-in-out infinite;"></div>
+        <div class="yara-wave yara-wave-1"></div>
+        <div class="yara-wave yara-wave-2"></div>
+        <div class="yara-wave yara-wave-3"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:3;">
+          <img src="promo-assets/yara_spirit.png" class="no-white-bg" style="width:240px; animation: yaraCenter 4s ease-in-out infinite;" alt="Yara AI">
+        </div>
+        <div class="yara-orbit">
+          <div class="yara-orbit-icon" style="--angle:0deg; --delay:0s;">🎙️</div>
+          <div class="yara-orbit-icon" style="--angle:90deg; --delay:-4s;">💬</div>
+          <div class="yara-orbit-icon" style="--angle:180deg; --delay:-8s;">🔊</div>
+          <div class="yara-orbit-icon" style="--angle:270deg; --delay:-12s;">⌨️</div>
+        </div>
+      </div>
+    </div>
+    <!-- Title - above mascot -->
+    <div style="position:absolute; top:10%; left:50%; transform:translateX(-50%); text-align:center; z-index:4; white-space:nowrap;">
+      <div class="sc-label anim-in d2" style="justify-content:center;">Meet Your AI Coach</div>
+      <h2 class="sc-title lg anim-in d2" style="text-align:center;">YARA <span class="accent">AI</span></h2>
+    </div>
+    <!-- Left: user chat bubble -->
+    <div class="anim-in-left d3" style="position:absolute; left:5%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; align-items:flex-end; width:240px; z-index:4;">
+      <div class="yara-bubble yara-bubble-user" style="margin-left:0; animation-delay:0.8s;">
+        <div class="yara-bubble-icon">🎙️</div>
+        <div class="yara-bubble-text">"How many calories have I burned today?"</div>
+      </div>
+      <div class="yara-cap anim-in d5" style="align-self:center;"><span>🎙️</span> Voice Chat</div>
+      <div class="yara-cap anim-in d6" style="align-self:center;"><span>👂</span> Always Listening</div>
+    </div>
+    <!-- Right: Yara response bubble -->
+    <div class="anim-in-right d4" style="position:absolute; right:5%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; align-items:flex-start; width:240px; z-index:4;">
+      <div class="yara-bubble yara-bubble-yara" style="animation-delay:2s;">
+        <div class="yara-bubble-icon">🔊</div>
+        <div class="yara-bubble-text yara-typing">"You've burned 347 kcal! Want a post-workout meal suggestion?"</div>
+      </div>
+      <div class="yara-cap anim-in d6" style="align-self:center;"><span>💬</span> Text Chat</div>
+      <div class="yara-cap anim-in d7" style="align-self:center;"><span>🧠</span> Remembers You</div>
+    </div>
+    <!-- Bottom capability pills -->
+    <div class="anim-in d5" style="position:absolute; bottom:12%; left:50%; transform:translateX(-50%); display:flex; gap:10px; z-index:4;">
+      <div class="yara-cap"><span>🎙️</span> Voice</div>
+      <div class="yara-cap"><span>💬</span> Text</div>
+      <div class="yara-cap"><span>👂</span> Listens</div>
+      <div class="yara-cap"><span>🔊</span> Speaks</div>
+      <div class="yara-cap"><span>🧠</span> Memory</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 7: WATCH ===== -->
+<div class="scene" data-scene="7">
+  <div class="sc-split" style="gap:50px;">
+    <div style="display:flex; gap:30px; align-items:center; perspective:1000px;">
+      <!-- Watch 1 - straight -->
+      <div class="watch-container anim-in-left d1">
+        <div class="watch-3d">
+          <div class="watch-band-top"></div>
+          <div class="watch-body">
+            <img src="promo-assets/watch1.png" alt="BodyQ Watch" style="border-radius:28px;">
+          </div>
+          <div class="watch-band-bottom"></div>
+          <div class="watch-crown"></div>
+          <div class="watch-button"></div>
+        </div>
+      </div>
+      <!-- Watch 2 - tilted 3D -->
+      <div class="watch-container anim-in-left d3">
+        <div class="watch-3d tilted">
+          <div class="watch-band-top"></div>
+          <div class="watch-body">
+            <img src="promo-assets/watch2.png" alt="BodyQ Watch Dashboard" style="border-radius:28px;">
+          </div>
+          <div class="watch-band-bottom"></div>
+          <div class="watch-crown"></div>
+          <div class="watch-button"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sc-text-block">
+      <div class="sc-label anim-in d2">Wearable Experience</div>
+      <h2 class="sc-title lg">
+        <span class="anim-in d3" style="display:block;"><span class="accent">WATCH</span></span>
+        <span class="anim-in d4" style="display:block;">COMPANION</span>
+      </h2>
+      <p class="sc-desc anim-in d5">Track workouts, calories, and get coaching insights right from your wrist. Seamlessly synced with the mobile app.</p>
+      <div class="stat-pills anim-in d6" style="margin-top:16px;">
+        <div class="stat-pill"><span class="sp-icon">⌚</span><div><div class="sp-val">WearOS</div><div class="sp-label">Compatible</div></div></div>
+        <div class="stat-pill"><span class="sp-icon">🔄</span><div><div class="sp-val">Sync</div><div class="sp-label">Real-time</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 8: COMMUNITY ===== -->
+<div class="scene" data-scene="8">
+  <div class="sc-split" style="gap:40px;">
+    <div class="sc-text-block" style="flex:1; min-width:0; max-width:400px;">
+      <div class="sc-label anim-in d1">Social Fitness</div>
+      <h2 class="sc-title md anim-in d2">COMMUNITY<br><span class="accent">CHALLENGES</span></h2>
+      <p class="sc-desc anim-in d3">Compete with friends, climb leaderboards, earn badges, and join weekly challenges.</p>
+      <div class="stat-pills anim-in d4" style="margin-top:14px;">
+        <div class="stat-pill"><span class="sp-icon">🔥</span><div><div class="sp-val">12</div><div class="sp-label">Streak</div></div></div>
+        <div class="stat-pill"><span class="sp-icon">🏅</span><div><div class="sp-val">8</div><div class="sp-label">Badges</div></div></div>
+        <div class="stat-pill"><span class="sp-icon">⭐</span><div><div class="sp-val">Lvl 12</div><div class="sp-label">Rank</div></div></div>
+      </div>
+    </div>
+    <div class="anim-in-right d2" style="display:flex; flex-direction:column; gap:12px; align-items:center; flex-shrink:0;">
+      <div class="leaderboard anim-in d3">
+        <div style="font-family:Syne; font-weight:700; font-size:12px; margin-bottom:10px;">🏆 Weekly Leaderboard</div>
+        <div class="lb-row">
+          <div class="lb-rank">1</div>
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#FFD700,#FFA000);">👑</div>
+          <div><div class="lb-name">Sarah M.</div><div class="lb-xp">12,450 XP</div></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">2</div>
+          <div class="lb-avatar" style="background:linear-gradient(135deg,var(--purple),var(--purple-dark));">A</div>
+          <div><div class="lb-name">Ahmed K.</div><div class="lb-xp">11,200 XP</div></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">3</div>
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);">R</div>
+          <div><div class="lb-name">Rami J.</div><div class="lb-xp">9,800 XP</div></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">4</div>
+          <div class="lb-avatar" style="background:linear-gradient(135deg,#FF6B6B,#C94444);">L</div>
+          <div><div class="lb-name">Lina T.</div><div class="lb-xp">8,650 XP</div></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="challenge-card anim-in d5">
+          <div style="font-size:16px; margin-bottom:4px;">⚡</div>
+          <div style="font-family:Syne; font-size:10px; font-weight:700;">10K Steps</div>
+          <div style="font-size:8px; color:var(--text-sec); margin-top:3px;">3 days left</div>
+          <div style="height:3px; background:var(--surface2); border-radius:2px; margin-top:6px;"><div style="height:100%; width:72%; background:var(--lime); border-radius:2px;"></div></div>
+        </div>
+        <div class="challenge-card anim-in d6">
+          <div style="font-size:16px; margin-bottom:4px;">🏋️</div>
+          <div style="font-family:Syne; font-size:10px; font-weight:700;">Workout Warrior</div>
+          <div style="font-size:8px; color:var(--text-sec); margin-top:3px;">5 workouts left</div>
+          <div style="height:3px; background:var(--surface2); border-radius:2px; margin-top:6px;"><div style="height:100%; width:40%; background:var(--purple); border-radius:2px;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCENE 9: FINAL CTA ===== -->
+<div class="scene" data-scene="9">
+  <div class="sc-center" style="position:relative;">
+    <div class="ring-3d" style="width:300px; height:300px; top:50%; left:50%; transform:translate(-50%,-50%); position:absolute;"></div>
+    <div class="ring-3d" style="width:400px; height:400px; top:50%; left:50%; transform:translate(-50%,-50%); position:absolute; animation-direction:reverse; animation-duration:25s; border-color:rgba(200,241,53,0.06);"></div>
+    <img src="../mobile-frontend/assets/BodyQ_Logo.png" class="anim-in-scale d1" style="width:80px; filter:drop-shadow(0 0 25px rgba(124,92,252,0.3)); position:relative; z-index:2;" alt="BodyQ">
+    <h2 class="sc-title xl anim-in d2" style="position:relative; z-index:2;">Move Better.<br><span class="accent">Live Longer.</span></h2>
+    <p class="sc-desc anim-in d3" style="text-align:center; max-width:460px; position:relative; z-index:2;">Your AI-powered fitness journey starts here. Train smarter with real-time posture analysis, personalized plans, and intelligent coaching.</p>
+    <div class="anim-in d4" style="position:relative; z-index:2;"><a href="#" class="cta-btn" style="font-size:18px; padding:18px 48px;">Get Started Free <span style="font-size:20px;">→</span></a></div>
+    <div class="anim-in d5" style="font-size:12px; color:rgba(255,255,255,0.2); letter-spacing:.15em; text-transform:uppercase; margin-top:6px; position:relative; z-index:2;">Train Smarter. Move Better. Live Longer.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let pts = [];
+function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resizeCanvas(); addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height;
+    this.s = Math.random()*2+0.3; this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3;
+    this.o = Math.random()*0.25+0.05; this.c = Math.random()>0.7?'#C8F135':'#7C5CFC';
+    this.pulse = Math.random()*Math.PI*2; this.pulseSpeed = 0.02+Math.random()*0.03;
+  }
+  update() {
+    this.x+=this.vx; this.y+=this.vy; this.pulse+=this.pulseSpeed;
+    if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height) this.reset();
+  }
+  draw() {
+    const pulsedO = this.o * (0.7 + 0.3*Math.sin(this.pulse));
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2);
+    ctx.fillStyle=this.c; ctx.globalAlpha=pulsedO; ctx.fill();
+    ctx.globalAlpha = pulsedO*0.3;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.s*3,0,Math.PI*2);
+    ctx.fillStyle=this.c; ctx.fill();
+    ctx.globalAlpha=1;
+  }
+}
+for(let i=0;i<60;i++) pts.push(new Particle());
+
+function drawConnections() {
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) {
+    const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+    if(d<100){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
+    ctx.strokeStyle=`rgba(124,92,252,${0.06*(1-d/100)})`; ctx.lineWidth=0.5; ctx.stroke(); }
+  }
+}
+function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach(p=>{p.update();p.draw();}); drawConnections(); requestAnimationFrame(animate); }
+animate();
+
+// SCENE ENGINE
+const scenes = document.querySelectorAll('.scene');
+const TOTAL = scenes.length;
+const DUR = 10000;
+const TRANS = 1200;
+let cur = 0, timer = null, timerStart = 0, af = null;
+
+const bar = document.getElementById('progressBar');
+for(let i=0;i<TOTAL;i++) { const d=document.createElement('div'); d.className='progress-dot'+(i===0?' active':''); d.onclick=()=>go(i); bar.appendChild(d); }
+
+const timerEl = document.getElementById('sceneTimer');
+const counterEl = document.getElementById('sceneCounter');
+
+function updDots() { document.querySelectorAll('.progress-dot').forEach((d,i)=>d.classList.toggle('active',i===cur)); }
+function updCounter() { counterEl.textContent = String(cur+1).padStart(2,'0')+' / '+String(TOTAL).padStart(2,'0'); }
+function animTimer() { const p=Math.min((Date.now()-timerStart)/DUR,1); timerEl.style.width=(p*100)+'%'; if(p<1) af=requestAnimationFrame(animTimer); }
+
+function go(i) {
+  if(i===cur) return;
+  clearTimeout(timer); cancelAnimationFrame(af);
+  const prev=scenes[cur]; prev.classList.remove('active'); prev.classList.add('exit-up');
+  setTimeout(()=>prev.classList.remove('exit-up'),TRANS);
+  scenes[i].classList.add('active'); cur=i;
+  updDots(); updCounter();
+  timerStart=Date.now(); timerEl.style.width='0%'; animTimer();
+  timer=setTimeout(next,DUR);
+}
+function next() { go((cur+1)%TOTAL); }
+
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); clearTimeout(timer); cancelAnimationFrame(af); next(); }
+  if(e.key==='ArrowLeft') { e.preventDefault(); clearTimeout(timer); cancelAnimationFrame(af); go((cur-1+TOTAL)%TOTAL); }
+});
+
+timerStart=Date.now(); animTimer(); timer=setTimeout(next,DUR);
+</script>
+</body>
+</html>
