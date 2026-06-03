@@ -25,6 +25,7 @@ import {
   invokeAiAssistant,
   sanitizeAiAssistantText,
 } from "../services/aiAssistantService";
+import { getLocalDateKey } from "../utils/dateUtils";
 
 const C = {
   bg: "#0F0B1E",
@@ -109,12 +110,6 @@ function buildFallbackMealPlan({ goals, eaten, protein, carbs, fat, mealSections
   return plan.join(" ");
 }
 
-function getLocalDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 function buildClientNutritionContext({ goals, eaten, protein, carbs, fat, waterMl, caloriesBurned, mealSections }) {
   const loggedMeals = (mealSections || [])

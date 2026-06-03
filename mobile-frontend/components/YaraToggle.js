@@ -127,6 +127,8 @@ export default function YaraToggle() {
         onPress={() => navigation.navigate('YaraAssistant')}
         activeOpacity={0.85}
         style={styles.touchable}
+        accessibilityRole="button"
+        accessibilityLabel="Open Yara AI assistant"
       >
         {imgError ? (
           <YaraFallback />

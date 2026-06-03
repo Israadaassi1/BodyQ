@@ -59,16 +59,31 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // Check session on app launch
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      resolveUser(session?.user ?? null);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session }, error }) => {
+        if (error) {
+          warn("[AuthContext] getSession error:", error.message);
+          supabase.auth.signOut().catch(() => {});
+          resolveUser(null);
+          return;
+        }
+        resolveUser(session?.user ?? null);
+      })
+      .catch(() => resolveUser(null));
 
     // Listen for sign in / sign out events
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) =>
-      resolveUser(session?.user ?? null),
-    );
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "TOKEN_REFRESHED" && !session) {
+        warn("[AuthContext] token refresh failed, signing out");
+        supabase.auth.signOut().catch(() => {});
+        resolveUser(null);
+        return;
+      }
+      resolveUser(session?.user ?? null);
+    });
 
     return () => subscription.unsubscribe();
   }, []);

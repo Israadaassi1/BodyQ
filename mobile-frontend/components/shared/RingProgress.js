@@ -28,10 +28,9 @@ export default function RingProgress({
       duration: 900,
       useNativeDriver: false,
     }).start();
-  }, [progress]);
+  }, [progress, anim, animated]);
 
-  const pct = animated ? progress : progress;
-  const clamp = Math.min(Math.max(pct, 0), 1);
+  const clamp = Math.min(Math.max(progress, 0), 1);
 
   // Approximate arc using border trick
   const right  = clamp > 0.75 ? color : 'transparent';

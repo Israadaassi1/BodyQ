@@ -15,15 +15,11 @@ import { getMuscleFatigue } from '../services/workoutService';
 import { AppEvents, emit } from '../lib/eventBus';
 import { DEFAULT_TARGETS, computeWaterTarget } from '../constants/targets';
 import { error as logError } from '../lib/logger';
+import { getLocalDateKey } from '../utils/dateUtils';
+
+const STEP_SYNC_INTERVAL_MS = 30000;
 
 const TodayContext = createContext(null);
-
-function getLocalDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 function getTodayWindow(date = new Date()) {
   const start = new Date(date);
@@ -326,7 +322,7 @@ export function TodayProvider({ children }) {
     if (!userId) return;
     const timer = globalThis.setInterval(() => {
       flushPendingSteps();
-    }, 30000);
+    }, STEP_SYNC_INTERVAL_MS);
     return () => globalThis.clearInterval(timer);
   }, [userId, flushPendingSteps]);
 

@@ -72,22 +72,29 @@ export async function ensureThread(ownerId, peer) {
   };
 }
 
-export async function getThreadMessages(ownerId, threadId) {
+export async function getThreadMessages(ownerId, threadId, { limit = 50, before } = {}) {
   if (!ownerId || !threadId) return [];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('messages')
     .select('id, sender_id, content, media_url, created_at')
     .eq('conversation_id', threadId)
     .eq('is_deleted', false)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (before) {
+    query = query.lt('created_at', before);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     const detail = [error?.message, error?.details, error?.hint].filter(Boolean).join(' | ');
     throw new Error(detail || 'Could not load thread messages.');
   }
 
-  return (data || []).map((message) => ({
+  return (data || []).reverse().map((message) => ({
     id: message.id,
     sender: message.sender_id === ownerId ? 'me' : 'them',
     text: message.content || (message.media_url ? '[Attachment]' : ''),

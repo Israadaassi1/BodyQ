@@ -45,14 +45,16 @@ async function getRemoteAvatarUrl(value) {
   if (String(value).startsWith('file://')) return value;
   if (isRemoteAvatarUrl(value)) return value;
 
-  const { data: publicData } = supabase
-    .storage
-    .from(AVATAR_BUCKET)
-    .getPublicUrl(value);
+  try {
+    const { data: publicData } = supabase
+      .storage
+      .from(AVATAR_BUCKET)
+      .getPublicUrl(value);
 
-  if (publicData?.publicUrl) {
-    return `${publicData.publicUrl}${publicData.publicUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
-  }
+    if (publicData?.publicUrl) {
+      return `${publicData.publicUrl}${publicData.publicUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+    }
+  } catch {}
 
   const { data, error } = await supabase
     .storage

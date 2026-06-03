@@ -92,6 +92,7 @@ export default function DMThread({ navigation, route }) {
   useEffect(() => {
     if (!threadId || !ownerId) return undefined;
 
+    let retryTimeout;
     const channel = supabase
       .channel(`dm-${threadId}`)
       .on(
@@ -106,9 +107,16 @@ export default function DMThread({ navigation, route }) {
           loadMessages();
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          retryTimeout = setTimeout(() => {
+            channel.subscribe();
+          }, 3000);
+        }
+      });
 
     return () => {
+      clearTimeout(retryTimeout);
       supabase.removeChannel(channel);
     };
   }, [loadMessages, ownerId, threadId]);
@@ -162,7 +170,7 @@ export default function DMThread({ navigation, route }) {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 16 : 0}
     >
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={20} color="#fff" />
         </Pressable>
         <View style={styles.headerMid}>
@@ -202,7 +210,7 @@ export default function DMThread({ navigation, route }) {
           style={styles.input}
           multiline
         />
-        <Pressable style={styles.sendBtn} onPress={onSend}>
+        <Pressable style={styles.sendBtn} onPress={onSend} accessibilityRole="button" accessibilityLabel="Send message">
           <Ionicons name="send" size={16} color="#130E25" />
         </Pressable>
       </View>
