@@ -13,21 +13,7 @@
 
 The platform is built around the principle that **AI is a core part of the product rather than an isolated feature**.
 
-BodyQ combines:
-
-* Multimodal AI
-* LLM-powered health coaching
-* Retrieval-Augmented Generation (RAG)
-* Cross-session AI memory
-* Tool/action calling
-* Real-time computer vision
-* Proactive event detection
-* Personalized training-plan generation
-* Nutrition and food recognition
-* Gamification and habit tracking
-* Real-time activity tracking
-* Administrative analytics
-* Database-level business logic
+BodyQ combines Multimodal AI, LLM-powered health coaching, Retrieval-Augmented Generation (RAG), Cross-session AI memory, Tool/action calling, Real-time computer vision, Proactive event detection, Personalized training-plan generation, Nutrition and food recognition, Gamification and habit tracking, Real-time activity tracking, Wearable device Integration and Administrative analytics dashboard.
 
 
 > 🥈 **Award-Winning Project**
@@ -66,56 +52,13 @@ The system targets **sub-500 ms feedback latency** for real-time interaction.
 
 # RAG Pipeline
 
-The Yara assistant uses a retrieval-augmented architecture rather than generating responses from the LLM alone.
-
-```text
-Mobile App
-     │
-     │ { userId, query }
-     ▼
-Supabase Edge Function
-     │
-     ├── 1. RETRIEVE
-     │
-     │   Parallel queries:
-     │   ├── Profile
-     │   ├── Activity
-     │   ├── Nutrition
-     │   ├── Workouts
-     │   ├── Body Metrics
-     │   ├── Cross-session Memory
-     │   └── Pending Events
-     │
-     ├── 2. AUGMENT
-     │
-     │   Retrieved data
-     │   + business rules
-     │   + user preferences
-     │   + memory
-     │   + proactive events
-     │
-     ├── 3. GENERATE
-     │
-     │   Groq / Llama
-     │
-     ├── 4. PROCESS
-     │
-     │   Extract:
-     │   ├── [MEMORY]
-     │   ├── [ACTION]
-     │   └── [EVENT_ACK]
-     │
-     │   Execute corresponding RPCs
-     │   Sanitize generated output
-     │
-     └── 5. PERSIST
-             │
-             ▼
-        Clean response
-             │
-             ▼
-         Mobile App
-```
+The AI Assistant implements a **retrieval-augmented generation (RAG)** pipeline that grounds every response in the user's application data. 
+When a request is received, the Supabase Edge Function retrieves relevant data in parallel (profile, recent activity, nutrition, workouts, body metrics, cross-session memory, and pending proactive events). This context is combined with predefined business rules, user preferences, and relevant memories to construct the prompt supplied to the Groq/Llama model. 
+The generated response is processed for structured commands such as [MEMORY], [ACTION], and [EVENT_ACK], allowing the system to:
+- execute authorized database RPCs
+- update application state.
+- sanitize and return the response to the mobile application.
+The resulting pipeline provides a controlled flow of retrieval, context augmentation, generation, action processing, persistence, and response delivery.
 
 Retrieved database information is converted into structured natural-language context before being passed to the model rather than exposing raw database structures directly.
 
@@ -140,13 +83,13 @@ Retrieved database information is converted into structured natural-language con
 ┌──────────────────────────────────────────────────────────────────┐
 │                       SUPABASE BACKEND                           │
 │                                                                  │
-│  ┌──────────────┐   ┌──────────────┐   ┌────────────────────┐  │
-│  │ Supabase     │   │ Edge         │   │ PostgreSQL 17      │  │
-│  │ Auth (JWT)   │   │ Functions    │   │ Tables + RPC +     │  │
-│  │ Email/Pass   │   │ Deno 2       │   │ RLS + Triggers     │  │
-│  └──────────────┘   └──────┬───────┘   └────────────────────┘  │
-│                             │                                   │
-└─────────────────────────────┼───────────────────────────────────┘
+│  ┌──────────────┐   ┌──────────────┐   ┌────────────────────┐    │
+│  │ Supabase     │   │ Edge         │   │ PostgreSQL 17      │    │
+│  │ Auth (JWT)   │   │ Functions    │   │ Tables + RPC +     │    │
+│  │ Email/Pass   │   │ Deno 2       │   │ RLS + Triggers     │    │
+│  └──────────────┘   └───────┬──────┘   └────────────────────┘    │
+│                             │                                    │
+└─────────────────────────────┼────────────────────────────────────┘
                               │
                ┌──────────────┼────────────────┐
                ▼              ▼                ▼
