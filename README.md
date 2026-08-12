@@ -38,14 +38,14 @@ BodyQ combines Multimodal AI, LLM-powered health coaching, Retrieval-Augmented G
 
 **Voice Assistant (Alexi)** is the voice interface. It provides a hands-free interaction layer for situations where typing is inconvenient, particularly during workouts. The voice assistant can interpret commands such as logging activities and navigating through the application.
 
-### Pipeline
+Pipeline:
 
 ```text
 User Speech -> Groq Whisper -> Speech-to-Text -> AI Assistant -> Action / Response -> Expo Speech -> Spoken Response
 ```
 ---
 
-## Posture AI
+**Posture AI**
 
 BodyQ includes a real-time computer-vision system for exercise form analysis. The posture system uses the device camera to detects body landmarks, track 33 pose landmarks, calculate joint angles, evaluates exercise form and provide real-time corrective feedback, all while storing session-level metrics for analytics
 
