@@ -1,9 +1,12 @@
 <div align="center">
-# BodyQ
+            
+## BodyQ
 
 ## The AI-Powered Fitness & Health Assistant
 
-**40+ features · 12 core AI modules · 1 integrated ecosystem**
+<img src="assets/Alexi_mascott.png" alt="Alexi AI Assistant" width="400"/>
+
+**40+ features · 12 core AI modules · 1 integrated ecosystem (mobile + web + wearable)**
 
 ---
 
@@ -104,40 +107,40 @@ Retrieved database information is converted into structured natural-language con
 
 # Tech Stack
 
-| Layer            | Technology              |    Version | Purpose                                     |
-| ---------------- | ----------------------- | ---------: | ------------------------------------------- |
-| Mobile Runtime   | Expo                    |    54.0.33 | Mobile build and deployment                 |
-| Mobile Framework | React Native            |     0.81.5 | Cross-platform mobile application           |
-| Mobile UI        | React                   |     19.1.0 | Mobile component rendering                  |
-| Web Framework    | Next.js                 |    14.2.30 | Web application and App Router              |
-| Web UI           | React                   |     18.3.1 | Web component rendering                     |
-| Web Styling      | Tailwind CSS            |      3.4.6 | Utility-first styling                       |
-| Web Animation    | Framer Motion / GSAP    | 11.3.8 / – | Animation and interaction                   |
-| Web Charts       | Recharts                |      3.8.1 | Analytics visualization                     |
-| Language         | TypeScript              |      5.5.3 | Web application                             |
-| Language         | JavaScript              |       ES6+ | Mobile application                          |
-| Database         | PostgreSQL              |         17 | Primary database                            |
-| Backend Platform | Supabase                |          – | Auth, DB, Edge Functions, Storage, Realtime |
-| Edge Runtime     | Deno                    |          2 | Edge Function execution                     |
-| LLM Inference    | Groq API                |          – | AI coaching and generation                  |
-| Main LLM         | Llama 3.3-70B           |          – | Conversational AI                           |
-| Fast LLM         | Llama 3.1-8B            |          – | Plans and insights                          |
-| Vision AI        | Google Gemini           |          – | Food image recognition                      |
-| Navigation       | React Navigation        |        7.x | Mobile navigation                           |
-| Persistence      | AsyncStorage            |          – | Local key-value storage                     |
-| Mobile Animation | React Native Reanimated |          – | Native-thread animations                    |
-| Camera           | Expo Camera             |          – | Food and barcode scanning                   |
-| Sensors          | Expo Sensors            |          – | Step tracking                               |
-| Audio            | Expo AV / Expo Speech   |          – | Voice interaction                           |
-| Notifications    | Expo Notifications      |          – | Local notifications                         |
-| Authentication   | Supabase Auth / JWT     |          – | Authentication and sessions                 |
-| Data Isolation   | PostgreSQL RLS          |          – | User-level data protection                  |
+| Layer            | Technology              | Purpose                                     |
+| ---------------- | ----------------------- | ------------------------------------------- |
+| Mobile Runtime   | Expo 54.0.33            | Mobile build and deployment                 |
+| Mobile Framework | React Native 0.81.5     | Cross-platform mobile application           |
+| Mobile UI        | React 19.1.0            | Mobile component rendering                  |
+| Web Framework    | Next.js 14.2.30         | Web application and App Router              |
+| Web UI           | React 18.3.1            | Web component rendering                     |
+| Web Styling      | Tailwind CSS 3.4.6      | Utility-first styling                       |
+| Web Animation    | Framer Motion / GSAP    | Animation and interaction                   |
+| Web Charts       | Recharts 3.8.1          | Analytics visualization                     |
+| Language         | TypeScript 5.5.3        | Web application                             |
+| Language         | JavaScript ES6+         | Mobile application                          |
+| Database         | PostgreSQL 17           | Primary database                            |
+| Backend Platform | Supabase                | Auth, DB, Edge Functions, Storage, Realtime |
+| Edge Runtime     | Deno 2                  | Edge Function execution                     |
+| LLM Inference    | Groq API                | AI coaching and generation                  |
+| Main LLM         | Llama 3.3-70B           | Conversational AI                           |
+| Fast LLM         | Llama 3.1-8B            | Plans and insights                          |
+| Vision AI        | Google Gemini           | Food image recognition                      |
+| Navigation       | React Navigation 7.x    | Mobile navigation                           |
+| Persistence      | AsyncStorage            | Local key-value storage                     |
+| Mobile Animation | React Native Reanimated | Native-thread animations                    |
+| Camera           | Expo Camera             | Food and barcode scanning                   |
+| Sensors          | Expo Sensors            | Step tracking                               |
+| Audio            | Expo AV / Expo Speech   | Voice interaction                           |
+| Notifications    | Expo Notifications      | Local notifications                         |
+| Authentication   | Supabase Auth / JWT     | Authentication and sessions                 |
+| Data Isolation   | PostgreSQL RLS          | User-level data protection                  |
 
 ---
 
 # Feature Inventory
 
-## Identity, Onboarding & Access
+## 🔐 Identity, Onboarding & Access
 
 |  # | Feature                       | Implementation                                                                      |
 | -: | ----------------------------- | ----------------------------------------------------------------------------------- |
@@ -150,7 +153,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## Daily Tracking & Nutrition
+## 📊 Daily Tracking & Nutrition
 
 |  # | Feature                      | Implementation                                               |
 | -: | ---------------------------- | ------------------------------------------------------------ |
@@ -164,7 +167,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## Training & Movement
+## 🏋️ Training & Movement
 
 |  # | Feature                     | Implementation                                            |
 | -: | --------------------------- | --------------------------------------------------------- |
@@ -177,7 +180,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## AI Coaching
+## 🤖 AI Coaching
 
 |  # | Feature                      | Implementation                                         |
 | -: | ---------------------------- | ------------------------------------------------------ |
@@ -191,7 +194,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## Gamification & Retention
+## 🏆 Gamification & Retention
 
 |  # | Feature          | Implementation                                  |
 | -: | ---------------- | ----------------------------------------------- |
@@ -202,7 +205,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## Reporting & Community
+## 📈 Reporting & Community
 
 |  # | Feature                      | Implementation                                               |
 | -: | ---------------------------- | ------------------------------------------------------------ |
@@ -215,7 +218,7 @@ Retrieved database information is converted into structured natural-language con
 
 ---
 
-## Platform, Admin & Infrastructure
+## 🖥️ Platform, Admin & Infrastructure
 
 |  # | Feature                  | Implementation                                                    |
 | -: | ------------------------ | ----------------------------------------------------------------- |
