@@ -4,7 +4,7 @@
 
 ## The AI-Powered Fitness & Health Assistant
 
-<img src="assets/Alexi_mascott.png" alt="Alexi AI Assistant" width="400"/>
+<img src="assets/Alexi_mascott.png" alt="Alexi AI Assistant" width="200"/>
 
 **40+ features · 12 core AI modules · 1 integrated ecosystem (mobile + web + wearable)**
 
