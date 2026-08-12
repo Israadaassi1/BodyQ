@@ -11,7 +11,7 @@ BodyQ **— AI-Powered Fitness & Health Assistant —** is a health platform com
 
 🥈 **Award Winning Project**
 
-[Overview](#overview) · [Meet Yara & Alexi](#meet-your-ai-coaches) · [Architecture](#architecture) · [Tech Stack](#tech-stack) · [Feature Map](#complete-feature-map) · [Getting Started](#getting-started) · [Business Model](#business-model) · [Roadmap](#roadmap)
+[Overview](#overview) · [Meet Yara & Alexi](#meet-your-ai-coaches) · [Architecture](#architecture) · [Tech Stack](#tech-stack) · [Feature Map](#complete-feature-map) · [Getting Started](#getting-started) 
 
 </div>
 
