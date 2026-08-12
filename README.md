@@ -602,20 +602,7 @@ mobile-frontend/.env
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key         |
 | `GEMINI_API_KEY`                | Gemini food-recognition access |
 
-> **Security warning:** `GEMINI_API_KEY` is currently used client-side and should be moved to a server-side function before production deployment.
-
 ---
-
-### 5. Production Hardening
-
-Additional production hardening should include:
-
-* Stronger API rate limiting
-* Centralized logging
-* Expanded automated testing
-* AI output evaluation
-* More comprehensive monitoring
-* Server-side handling of all sensitive third-party API keys
 
 # Project Philosophy
 
