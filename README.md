@@ -1,3 +1,4 @@
+<div align="center">
 # BodyQ
 
 ## The AI-Powered Fitness & Health Assistant
@@ -30,100 +31,34 @@ BodyQ combines:
 
 
 > 🥈 **Award-Winning Project**
-
+</div>
 ---
 
 # Table of Contents
 
-* [Overview](#overview)
-* [Core AI System](#core-ai-system)
-
-  * [Yara AI Coach](#yara-ai-coach)
-  * [Voice Assistant](#voice-assistant)
-  * [Posture AI](#posture-ai)
-  * [RAG Pipeline](#rag-pipeline)
-* [System Architecture](#system-architecture)
-* [Tech Stack](#tech-stack)
-* [Feature Inventory](#feature-inventory)
-
-  * [Identity, Onboarding & Access](#identity-onboarding--access)
-  * [Daily Tracking & Nutrition](#daily-tracking--nutrition)
-  * [Training & Movement](#training--movement)
-  * [AI Coaching](#ai-coaching)
-  * [Gamification & Retention](#gamification--retention)
-  * [Reporting & Community](#reporting--community)
-  * [Platform, Admin & Infrastructure](#platform-admin--infrastructure)
-* [Database Architecture](#database-architecture)
-* [AI Data Flow](#ai-data-flow)
-* [Security Architecture](#security-architecture)
-* [Mobile State Management](#mobile-state-management)
-* [Repository Structure](#repository-structure)
-* [Getting Started](#getting-started)
-* [Environment Variables](#environment-variables)
+[Overview](#overview) · [Core AI System](#core-ai-system) · [System Architecture](#system-architecture) · [Tech Stack](#tech-stack) · [Feature Inventory](#feature-inventory) · [Database Architecture](#database-architecture) · [AI Data Flow](#ai-data-flow) · [Security Architecture](#security-architecture) · [Mobile State Management](#mobile-state-management) · [Repository Structure](#repository-structure) · [Getting Started](#getting-started) · [Environment Variables](#environment-variables)
 
 ---
 
 # Core AI System
 
-BodyQ contains several AI-driven subsystems working together rather than relying on a single chatbot.
 
-## AI Coach
-BodyQ's primary conversational health assistant.
-
-It combines:
-
-* LLM-powered conversation
-* Retrieval-Augmented Generation
-* User activity retrieval
-* Nutrition history
-* Workout history
-* Body metrics
-* Cross-session memory
-* Proactive events
-* Server-side actions
-* Personalized response generation
+**AI Coach** is BodyQ's primary conversational health assistant and the RAG-powered coaching identity. It combines LLM-powered conversation (text coaching), Retrieval-Augmented Generation (RAG), Cross-session memory, Proactive events, Server-side actions, and Personalized response generation
 
 ---
 
-## Voice Assistant
-
-The voice interface provides a hands-free interaction layer for situations where typing is inconvenient, particularly during workouts.
+**Voice Assistant (Alexi)** is the voice interface. It provides a hands-free interaction layer for situations where typing is inconvenient, particularly during workouts. The voice assistant can interpret commands such as logging activities and navigating through the application.
 
 ### Pipeline
 
 ```text
-User Speech
-    ↓
-Groq Whisper
-    ↓
-Speech-to-Text
-    ↓
-Yara AI Assistant
-    ↓
-Action / Response
-    ↓
-Expo Speech
-    ↓
-Spoken Response
+User Speech -> Groq Whisper -> Speech-to-Text -> AI Assistant -> Action / Response -> Expo Speech -> Spoken Response
 ```
-
-The voice assistant can interpret commands such as logging activities and navigating through the application.
-
 ---
 
 ## Posture AI
 
-BodyQ includes a real-time computer-vision system for exercise form analysis.
-
-The posture system:
-
-* Uses the device camera
-* Detects body landmarks
-* Tracks 33 pose landmarks
-* Calculates joint angles
-* Evaluates exercise form
-* Provides real-time corrective feedback
-* Stores session-level metrics for analytics
+BodyQ includes a real-time computer-vision system for exercise form analysis. The posture system uses the device camera to detects body landmarks, track 33 pose landmarks, calculate joint angles, evaluates exercise form and provide real-time corrective feedback, all while storing session-level metrics for analytics
 
 The system targets **sub-500 ms feedback latency** for real-time interaction.
 
