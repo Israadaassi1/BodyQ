@@ -8,7 +8,6 @@
 
 **40+ features · 12 core AI modules · 1 integrated ecosystem (mobile + web + wearable)**
 
----
 
 ## Overview
 
@@ -21,7 +20,7 @@ BodyQ combines Multimodal AI, LLM-powered health coaching, Retrieval-Augmented G
 
 > 🥈 **Award-Winning Project**
 </div>
----
+
 
 # Table of Contents
 
